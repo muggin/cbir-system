@@ -10,12 +10,12 @@ from keras.models import Model
 class CNNExtractor(BaseExtractor):
     """Class defines a ConvNet based feature extractor."""
 
-    def __init__(self, output_layer='fc2'):
+    def __init__(self, input_size=(224, 224), output_layer='fc2', normalize=True):
         """Initialize CNN Feature Extractor."""
-        self._input_shape = (224, 224)
+        self._input_shape = input_size
         self._output_layer = output_layer
+        self._normalize = normalize
         self._model = self._initialize_model()
-        pass
 
     def _initialize_model(self):
         """Initialize VGG16 net and remove appropriate layers from the top."""
@@ -23,9 +23,8 @@ class CNNExtractor(BaseExtractor):
         feat_extractor = Model(inputs=vgg.input, outputs=vgg.get_layer(self._output_layer).output)
         return feat_extractor
 
-    def extract(self, image, normalized=False):
+    def extract(self, image):
         """Extracts abstract features from the given image."""
-
         # reshape input image if necessary
         if image.shape[:2] != self._input_shape:
             image = sktrans.resize(image, self._input_shape, preserve_range=True)
@@ -36,7 +35,7 @@ class CNNExtractor(BaseExtractor):
         image_feats = self._model.predict(image_proc)
 
         # normalize feature values
-        if normalized:
+        if self._normalize:
             image_feats /= np.linalg.norm(image_feats)
 
         return image_feats
