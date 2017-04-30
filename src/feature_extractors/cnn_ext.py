@@ -1,37 +1,54 @@
 import numpy as np
-import skimage.transform as sktrans
 
 from src.feature_extractors.base_ext import BaseExtractor
 from keras.applications.vgg16 import preprocess_input
 from keras.applications import VGG16
 from keras.models import Model
+from skimage import transform
 
 
 class CNNExtractor(BaseExtractor):
-    """Class defines a ConvNet based feature extractor."""
+    """ Class defines a ConvNet based feature extractor.
 
-    def __init__(self, input_size=(224, 224), output_layer='fc2', normalize=True):
-        """Initialize CNN Feature Extractor."""
-        self._input_shape = input_size
+        The size of the output feature vector depends on the layer
+        used as output of the network.
+    """
+
+    def __init__(self, output_layer='fc2', normalize=True):
+        """
+        Initialize ConvNet extractor.
+
+        :param output_layer: Name of layer which should be used as output of feature extractor (string)
+        :param normalize: whether feature vector should be normalized (boolean)
+        """
+        self._resize_dims = (224, 224)
         self._output_layer = output_layer
         self._normalize = normalize
         self._model = self._initialize_model()
 
     def _initialize_model(self):
-        """Initialize VGG16 net and remove appropriate layers from the top."""
         vgg = VGG16(include_top=True)
         feat_extractor = Model(inputs=vgg.input, outputs=vgg.get_layer(self._output_layer).output)
         return feat_extractor
 
-    def extract(self, image):
-        """Extracts abstract features from the given image."""
+    def _preprocess_image(self, image):
         # reshape input image if necessary
-        if image.shape[:2] != self._input_shape:
-            image = sktrans.resize(image, self._input_shape, preserve_range=True)
-
-        # process input image (mean subtraction, etc.) and extract features
+        if image.shape[:2] != self._resize_dims:
+            image = transform.resize(image, self._resize_dims, preserve_range=True)
         image = np.expand_dims(image, axis=0)
-        image_proc = preprocess_input(image)
+        return preprocess_input(image)
+
+    def extract(self, image):
+        """
+        Extracts abstract features from the given image.
+
+        :param image: image from which features should be extracted
+        :return: a numpy array with features, dimensionality depends on class settings.
+        """
+        # preprocess image (reshaping, mean subtraction, etc.)
+        image_proc = self._preprocess_image(image)
+
+        # extract features
         image_feats = self._model.predict(image_proc)
 
         # normalize feature values
