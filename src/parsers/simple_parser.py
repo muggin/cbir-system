@@ -1,5 +1,5 @@
 from .base_parser import BaseParser
-from src.feature_extractors.histogram_ext import HistogramExtractor
+from src.feature_extractors.hist_ext import HistogramExtractor
 
 
 class SimpleParser(BaseParser):

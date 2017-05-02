@@ -1,6 +1,6 @@
 import os
-import indexes
-import parsers
+import src.indexes
+import src.parsers
 import argparse
 import ConfigParser as cp
 
@@ -33,12 +33,12 @@ if __name__ == '__main__':
 
     # read sections
     parser_classname = config_file.get(_CFG_GENERAL, _CFG_GENERAL_PARSER)
-    parser_class = getattr(parsers, parser_classname)
+    parser_class = getattr(src.parsers, parser_classname)
     parser_params = dict(config_file.items(_CFG_PARSER)) if config_file.has_section(_CFG_PARSER) else {}
     parser = parser_class(**parser_params)
 
     index_classname = config_file.get(_CFG_GENERAL, _CFG_GENERAL_INDEX)
-    index_class = getattr(indexes, index_classname)
+    index_class = getattr(src.indexes, index_classname)
     index_params = dict(config_file.items(_CFG_INDEX)) if config_file.has_section(_CFG_INDEX) else {}
     index = index_class(**index_params)
 
