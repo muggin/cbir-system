@@ -55,7 +55,7 @@ class CNNExtractor(BaseExtractor):
         if self._normalize:
             image_feats /= np.linalg.norm(image_feats)
 
-        return image_feats
+        return image_feats[0]
 
 
 if __name__ == '__main__':
@@ -77,7 +77,7 @@ if __name__ == '__main__':
 
     print 'Extracting features...'
     cnn_ext = CNNExtractor()
-    preds = np.array([cnn_ext.extract(img, normalized=True)[0] for img in imgs])
+    preds = np.array([cnn_ext.extract(img) for img in imgs])
 
     print 'Finding similar images...'
     for _ in xrange(query_num):

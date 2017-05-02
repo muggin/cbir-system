@@ -79,7 +79,8 @@ class HistogramExtractor(BaseExtractor):
         regions_hists = []
         for region in image_regions:
             # compute channel histograms for each region
-            hists, _ = np.histogramdd(region.reshape(-1, 3), bins=self._bins_per_ch, normed=True)
+            hists, _ = np.histogramdd(region.reshape(-1, 3), bins=self._bins_per_ch,
+                                      range=[(0., 1.)]*3, normed=True)
             regions_hists.extend(hists.reshape(-1))
 
         if self._normalize:
@@ -107,14 +108,14 @@ if __name__ == '__main__':
         imgs = np.array([io.imread(os.path.join(data_path, file_name)) for file_name in files])
 
     print 'Extracting features...'
-    hist_ext = HistogramExtractor(nbins_per_ch=(12, 8, 3), use_hsv=True, use_regions=True)
+    hist_ext = HistogramExtractor(nbins_per_ch=(12, 8, 3), use_hsv=True, use_regions=False)
     preds = np.array([hist_ext.extract(img) for img in imgs])
-    print preds[0].shape
 
     print 'Finding similar images...'
     for _ in xrange(query_num):
         query_idx = np.random.randint(imgs.shape[0])
         query_img = preds[query_idx]
+
         sims = np.array([-measures.chisq_similarity(query_img, other) for other in preds])
         most_sim = np.argsort(sims)
 
@@ -131,3 +132,4 @@ if __name__ == '__main__':
         plt.title('Result #3 (Sim: %.2f)' % sims[most_sim[-4]])
         plt.imshow(imgs[most_sim[-4]])
         plt.show()
+
