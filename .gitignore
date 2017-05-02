@@ -1,6 +1,8 @@
 # Virtual env
 ir/*
 
+*.ipynb
+
 # OSX
 .DS_Store
 

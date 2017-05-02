@@ -1,6 +1,6 @@
 # kth-seir-project
 
-# Components
+# Modules
 
 - `image.py` : regroups functions to manipulate images. Side effects : i/o (mainly reading disk)
 - `index.py` : index representation/abstraction. Function may mutate the index state. 
