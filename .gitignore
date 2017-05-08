@@ -1,5 +1,6 @@
 # Virtual env
 ir/*
+experiments/*
 
 # OSX
 .DS_Store

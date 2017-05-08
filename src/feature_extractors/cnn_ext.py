@@ -4,6 +4,7 @@ from src.feature_extractors.base_ext import BaseExtractor
 from keras.applications.vgg16 import preprocess_input
 from keras.applications import VGG16
 from keras.models import Model
+from keras import backend as K
 from skimage import transform
 
 
@@ -14,22 +15,22 @@ class CNNExtractor(BaseExtractor):
         used as output of the network.
     """
 
-    def __init__(self, output_layer='fc2', normalize=True):
+    def __init__(self, output_layers=('fc2',)):
         """
         Initialize ConvNet extractor.
 
-        :param output_layer: Name of layer which should be used as output of feature extractor (string)
-        :param normalize: whether feature vector should be normalized (boolean)
+        :param output_layers: Names of layers which should be used as output of feature extractor (string)
         """
         self._resize_dims = (224, 224)
-        self._output_layer = output_layer
-        self._normalize = normalize
-        self._model = self._initialize_model()
+        self._output_layers = output_layers
+        self._model_functor = self._initialize_model()
 
     def _initialize_model(self):
         vgg = VGG16(include_top=True)
-        feat_extractor = Model(inputs=vgg.input, outputs=vgg.get_layer(self._output_layer).output)
-        return feat_extractor
+        inputs = vgg.input
+        outputs = [layer.output for layer in vgg.layers if layer.name in self._output_layers]
+        functor = K.function([inputs] + [K.learning_phase()], outputs)
+        return functor
 
     def _preprocess_image(self, image):
         # reshape input image if necessary
@@ -49,13 +50,9 @@ class CNNExtractor(BaseExtractor):
         image_proc = self._preprocess_image(image)
 
         # extract features
-        image_feats = self._model.predict(image_proc)
+        image_feats = self._model_functor([image_proc, 1.])
 
-        # normalize feature values
-        if self._normalize:
-            image_feats /= np.linalg.norm(image_feats)
-
-        return image_feats[0]
+        return [feats[0] for feats in image_feats]
 
 
 if __name__ == '__main__':

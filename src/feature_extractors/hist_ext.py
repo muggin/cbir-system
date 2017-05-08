@@ -16,8 +16,7 @@ class HistogramExtractor(BaseExtractor):
         size(feature_vector) = bins_ch_1 * bins_ch_2 * bins_ch_3 * num_regions
     """
 
-    def __init__(self, nbins_per_ch=(16,), use_hsv=False, use_regions=False, radius=0.6,
-                 normalize=True):
+    def __init__(self, nbins_per_ch=(16,), use_hsv=False, use_regions=False, radius=0.6):
         """
         Initialize Histogram extractor.
 
@@ -25,13 +24,11 @@ class HistogramExtractor(BaseExtractor):
         :param use_hsv: whether to convert image to HSV space (boolean)
         :param use_regions: whether image should be split into regions (boolean)
         :param radius: radius of central part of image (float: 0.0-1.0)
-        :param normalize: whether feature vector should be normalized (boolean)
         """
         self._bins_per_ch = nbins_per_ch if len(nbins_per_ch) == 3 else 3 * nbins_per_ch
         self._use_regions = use_regions
         self._use_hsv = use_hsv
         self._radius = radius
-        self._normalize = normalize
 
     def _preprocess_image(self, image):
         # convert image to floats
@@ -82,9 +79,6 @@ class HistogramExtractor(BaseExtractor):
             hists, _ = np.histogramdd(region.reshape(-1, 3), bins=self._bins_per_ch,
                                       range=[(0., 1.)]*3, normed=True)
             regions_hists.extend(hists.reshape(-1))
-
-        if self._normalize:
-            regions_hists /= np.linalg.norm(regions_hists)
 
         return np.array(regions_hists)
 
