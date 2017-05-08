@@ -1,12 +1,9 @@
 from __future__ import absolute_import
 
-import os
 import datetime
-import numpy as np
 import cPickle as pickle
 
 from src.indexes.base_index import BaseIndex
-from src.similarity_measures.measures import euclidean_similarity
 
 
 class FileIndex(BaseIndex):
@@ -17,7 +14,7 @@ class FileIndex(BaseIndex):
     USE ONLY TO PERSIST PARSED IMAGES TO FILE
     """
 
-    def __init__(self, index_field, index_path=None):
+    def __init__(self, parsed_path):
         """
         Initialize MemoryIndex
 
@@ -25,7 +22,7 @@ class FileIndex(BaseIndex):
         :param index_path:
         """
         self._parsed_images = []
-        self._file_basename = 'parsed_images'
+        self._parsed_path = parsed_path
 
     def insert_document(self, document_dict):
         self._parsed_images.append(document_dict)
@@ -35,10 +32,7 @@ class FileIndex(BaseIndex):
         return
 
     def persist_index(self):
-        suffix = datetime.datetime.now().strftime('%y%m%d_%H%M%S')
-        filename = '_'.join([self._file_basename, suffix]) + '.p'
-
-        with open(filename, 'wb') as fd:
+        with open(self._parsed_path, 'wb') as fd:
             pickle.dump(self._parsed_images, fd)
 
 

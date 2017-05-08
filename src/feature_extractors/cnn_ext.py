@@ -35,7 +35,7 @@ class CNNExtractor(BaseExtractor):
     def _preprocess_image(self, image):
         # reshape input image if necessary
         if image.shape[:2] != self._resize_dims:
-            image = transform.resize(image, self._resize_dims, preserve_range=True)
+            image = transform.resize(image, self._resize_dims, preserve_range=True, mode='constant')
         image = np.expand_dims(image, axis=0)
         return preprocess_input(image)
 
