@@ -3,6 +3,7 @@ import src.indexes
 import src.parsers
 import argparse
 import ConfigParser as cp
+import cPickle as pickle
 
 from skimage import io
 
@@ -20,11 +21,14 @@ if __name__ == '__main__':
     ap.add_argument('-d', '--dataset', required=True, help='Path to folder containing data')
     ap.add_argument('-c', '--config', required=True, help='Path to the config file')
     ap.add_argument('-q', '--quiet', default=False, action='store_true', help='Work in quiet mode')
+    ap.add_argument('-i', '--import', default=None, required=False, help='Path to cPickle file with'
+                                                                       ' parsed images')
 
     # parse arguments
     args = vars(ap.parse_args())
     data_path = args['dataset']
     config_path = args['config']
+    feats_path = args['import']
     quiet_mode = args['quiet']
 
     # read config
@@ -46,19 +50,24 @@ if __name__ == '__main__':
     if not quiet_mode:
         print 'Indexing images...'
 
-    indexed_count = 0
-    for root, dirs, files in os.walk(data_path, topdown=True):
-        for file_name in files:
-            if file_name.endswith(('.jpg', '.png')):
-                image_path = os.path.join(root, file_name)
-                image = io.imread(image_path)
-                image_parsed = parser.prepare_document(file_name, image)
-                index.insert_document(image_parsed)
-                print file_name
+    if feats_path is None:
+        indexed_count = 0
+        for root, dirs, files in os.walk(data_path, topdown=True):
+            for file_name in files:
+                if file_name.endswith(('.jpg', '.png')):
+                    image_path = os.path.join(root, file_name)
+                    image = io.imread(image_path)
+                    image_parsed = parser.prepare_document(file_name, image)
+                    index.insert_document(image_parsed)
 
-                indexed_count += 1
-                if not quiet_mode and indexed_count % 500 == 0:
-                    print 'Indexed {} images...'.format(indexed_count)
+                    indexed_count += 1
+                    if not quiet_mode and indexed_count % 500 == 0:
+                        print 'Indexed {} images...'.format(indexed_count)
+    else:
+        with open(feats_path, 'r') as fd:
+            parsed_images = pickle.load(fd)
+            for image_parsed in parsed_images:
+                index.insert_document(image_parsed)
 
     # persist index
     if not quiet_mode:
