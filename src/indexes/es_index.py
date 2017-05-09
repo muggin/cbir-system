@@ -2,6 +2,7 @@ from base_index import BaseIndex
 import json
 import httplib
 import re
+from base64 import b64encode
 
 INDEX_PATH = "/images/"
 
@@ -29,7 +30,9 @@ class ESIndex():
 		for doc in self.doc_buffer:
 			#print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
 			# Index data
-			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "features" : doc["features"]}), { "Content-Type": "application/json" })
+			auth = b64encode(b"elastic:changeme").decode("ascii")
+
+			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "features" : doc["features"]}), { "Content-Type": "application/json", 'Authorization' : 'Basic ' + auth })
 			# Retrieve response for debug, could be relevant to use for error handling
 			response = json.loads(self.connection.getresponse().read().decode())
 			print response
