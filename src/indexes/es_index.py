@@ -3,63 +3,66 @@ import json
 import httplib
 import re
 
-URL = "localhost:9200"
-INDEX_PATH = "/images/image/"
+INDEX_PATH = "images/"
 
 
 class ESIndex():
-    def __init__(self, threshold):
-        self.counter = 1  # Document ID
-        self.doc_buffer = []  # Hold documents until threshold is reached or persist_index() is called
-        self.DOC_THRESHOLD = threshold  # The amount of documents required to trigger the indexing
+	def __init__(self, URL, threshold=500):
+		self.URL = URL
+		self.counter = 1 # Document ID
+		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
+		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
 
-    # Stores a document in the buffer
-    # When a certain threshold is met, indexes them all at once
-    def insert_document(self, document_dict):
+	# Stores a document in the buffer
+	# When a certain threshold is met, indexes them all at once
+	def insert_document(self, document_dict):
+		
+		self.doc_buffer.append(document_dict)
 
-        self.doc_buffer.append(document_dict)
+		if len(self.doc_buffer) >= self.DOC_THRESHOLD:
+			self.index_docs();
 
-        if len(self.doc_buffer) >= self.DOC_THRESHOLD:
-            self.index_docs();
+	# Does the actual indexing
+	def index_docs(self):
+		
+		self.connection = httplib.HTTPConnection(self.URL)
+		for doc in self.doc_buffer:
+			#print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
+			# Index data
+			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["query_feature"]}), { "Content-Type": "application/json" })
+			# Retrieve response for debug, could be relevant to use for error handling
+			response = json.loads(self.connection.getresponse().read().decode())
+			print response
+			self.counter += 1
 
-    # Does the actual indexing
-    def index_docs(self):
-        self.connection = httplib.HTTPConnection(URL)
+		self.connection.close()
+		self.doc_buffer = []
 
-        for doc in self.doc_buffer:
-            # Index data
-            self.connection.request('POST', INDEX_PATH + str(self.counter), json.dumps(doc),
-                                    {"Content-Type": "application/json"})
-            # Retrieve response for debug, could be relevant to use for error handling
-            response = json.loads(self.connection.getresponse().read().decode())
-            print response
-            self.counter += 1
-            self.connection.close()
+	# Query ES with specified image
+	def query_index(self, query_dict, query_fields):
+		# Put together query string
+		query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"query_feature" : query_dict["query_feature"]}}}}}})
+		
+		self.connection = httplib.HTTPConnection(self.URL)
+		
+		# Print query string for debug purposes
+		print query_string
+		
+		# Submit the search query to ES
+		self.connection.request('GET', 'images/image/_search', query_string)
 
-        self.doc_buffer = []
+		# Retrieve response
+		response = json.loads(self.connection.getresponse().read().decode())
+		print response
+		
+		self.connection.close()
+		return response
+ 
+	# If there are documents in the buffer, this method is called to finalize the indexing
+	def persist_index(self):
+		if len(self.doc_buffer) > 0:
+			self.index_docs()
 
-    # Query ES with specified image
-    def query_index(self, query_dict, query_fields):
-        # Put together query string
-        query_string = json.JSONEncoder().encode(
-            {"query": {"bool": {"must": {"terms": {"features": query_dict["features"]}}}}})
+index = ESIndex(500)
 
-        self.connection = httplib.HTTPConnection(URL)
-
-        # Print query string for debug purposes
-        print query_string
-
-        # Submit the search query to ES
-        self.connection.request('GET', 'images/image/_search', query_string)
-
-        # Retrieve response
-        response = json.loads(self.connection.getresponse().read().decode())
-        print response
-
-        self.connection.close()
-        return response
-
-    # If there are documents in the buffer, this method is called to finalize the indexing
-    def persist_index(self):
-        if len(self.doc_buffer) > 0:
-            self.index_docs()
+index.query_index({"doc_name" : "fish.jpg", "query_feature" : [1, 2, 3, 4]}, "bla")
