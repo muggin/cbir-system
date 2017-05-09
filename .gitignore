@@ -1,6 +1,7 @@
 # Virtual env
 ir/*
 experiments/*
+data/parsed/*
 
 # OSX
 .DS_Store
