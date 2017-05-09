@@ -30,6 +30,7 @@ The system is based on two feature extractors, one using 2D color histograms and
 - `small` - small dataset for quick local tests
 - `xsmall` - super small dataset, only 4 imgaes for prototyping
 - `flickr_25k` - not in repo but should be placed here (locally)
+- `flickr_25k/meta/annotations` - not in the repo. Should contains the annotations files provided.
 
 `scripts` directory - holds all scripts related to the image retrieval system
 - `index_data.py` - script that runs indexing, requires config in appropriate format (look below for details).
