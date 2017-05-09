@@ -20,6 +20,7 @@ if __name__ == '__main__':
     ap.add_argument('-d', '--dataset', required=True, help='Path to folder containing data')
     ap.add_argument('-c', '--config', required=True, help='Path to the config file')
     ap.add_argument('-q', '--quiet', default=False, action='store_true', help='Work in quiet mode')
+    ap.add_argument('-b', '--blacklist', default=None, help='Path to file with blacklist IDs')
     ap.add_argument('-i', '--import', default=None, required=False, help='Path to cPickle file with'
                                                                          ' parsed images')
 
@@ -27,12 +28,19 @@ if __name__ == '__main__':
     args = vars(ap.parse_args())
     data_path = args['dataset']
     config_path = args['config']
+    blacklist_path = args['blacklist']
     feats_path = args['import']
     quiet_mode = args['quiet']
 
-    # read config
+    # read config and blacklist files
     config_file = cp.SafeConfigParser()
     config_file.readfp(open(config_path))
+
+    if blacklist_path is not None:
+        with open(blacklist_path) as fd:
+            blacklist = (['im' + img_id.strip() for img_id in fd])
+    else:
+        blacklist = set([])
 
     # read sections
     parser_classname = config_file.get(_CFG_GENERAL, _CFG_GENERAL_PARSER)
@@ -55,7 +63,7 @@ if __name__ == '__main__':
         indexed_count = 0
         for root, dirs, files in os.walk(data_path, topdown=True):
             for file_name in files:
-                if file_name.endswith(('.jpg', '.png')):
+                if file_name.endswith(('.jpg', '.png')) and file_name not in blacklist:
                     image_path = os.path.join(root, file_name)
                     image = io.imread(image_path)
                     image_parsed = parser.prepare_document(file_name, image)
@@ -68,7 +76,8 @@ if __name__ == '__main__':
         with open(feats_path, 'r') as fd:
             parsed_images = pickle.load(fd)
             for image_parsed in parsed_images:
-                index.insert_document(image_parsed)
+                if image_parsed not in blacklist:
+                    index.insert_document(image_parsed)
 
     # persist index
     if not quiet_mode:
