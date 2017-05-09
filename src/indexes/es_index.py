@@ -3,12 +3,12 @@ import json
 import httplib
 import re
 
-URL = "localhost:9200"
-INDEX_PATH = "/images/image/"
+INDEX_PATH = "images/"
 
 
 class ESIndex():
-	def __init__(self, threshold):
+	def __init__(self, URL, threshold=500):
+		self.URL = URL
 		self.counter = 1 # Document ID
 		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
 		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
@@ -25,25 +25,25 @@ class ESIndex():
 	# Does the actual indexing
 	def index_docs(self):
 		
-		self.connection = httplib.HTTPConnection(URL)
+		self.connection = httplib.HTTPConnection(self.URL)
 		for doc in self.doc_buffer:
 			#print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
 			# Index data
-			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]}), { "Content-Type": "application/json" })
+			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["query_feature"]}), { "Content-Type": "application/json" })
 			# Retrieve response for debug, could be relevant to use for error handling
 			response = json.loads(self.connection.getresponse().read().decode())
 			print response
 			self.counter += 1
-			
+
 		self.connection.close()
 		self.doc_buffer = []
 
 	# Query ES with specified image
 	def query_index(self, query_dict, query_fields):
 		# Put together query string
-		query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"query_feature" : query_dict["features"]}}}}}})
+		query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"query_feature" : query_dict["query_feature"]}}}}}})
 		
-		self.connection = httplib.HTTPConnection(URL)
+		self.connection = httplib.HTTPConnection(self.URL)
 		
 		# Print query string for debug purposes
 		print query_string
@@ -62,3 +62,7 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
+
+index = ESIndex(500)
+
+index.query_index({"doc_name" : "fish.jpg", "query_feature" : [1, 2, 3, 4]}, "bla")
