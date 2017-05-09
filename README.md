@@ -56,3 +56,15 @@ key=value # these params will be passed to the class on init, this section can b
 [IndexParams]
 key=value # these params will be passed to the class on init this section can be empty
 ```
+
+## Server
+
+The server can be started by first building a docker image and then running it:
+
+`docker-compose build server`
+
+`docker-compose up server`
+
+
+
+
