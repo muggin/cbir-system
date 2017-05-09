@@ -7,7 +7,6 @@ import cPickle as pickle
 
 from skimage import io
 
-
 # names of sections in config file
 _CFG_GENERAL = 'General'
 _CFG_GENERAL_INDEX = 'index'
@@ -22,7 +21,7 @@ if __name__ == '__main__':
     ap.add_argument('-c', '--config', required=True, help='Path to the config file')
     ap.add_argument('-q', '--quiet', default=False, action='store_true', help='Work in quiet mode')
     ap.add_argument('-i', '--import', default=None, required=False, help='Path to cPickle file with'
-                                                                       ' parsed images')
+                                                                         ' parsed images')
 
     # parse arguments
     args = vars(ap.parse_args())
@@ -38,12 +37,14 @@ if __name__ == '__main__':
     # read sections
     parser_classname = config_file.get(_CFG_GENERAL, _CFG_GENERAL_PARSER)
     parser_class = getattr(src.parsers, parser_classname)
-    parser_params = dict(config_file.items(_CFG_PARSER)) if config_file.has_section(_CFG_PARSER) else {}
+    parser_params = dict(config_file.items(_CFG_PARSER)) if config_file.has_section(
+        _CFG_PARSER) else {}
     parser = parser_class(**parser_params)
 
     index_classname = config_file.get(_CFG_GENERAL, _CFG_GENERAL_INDEX)
     index_class = getattr(src.indexes, index_classname)
-    index_params = dict(config_file.items(_CFG_INDEX)) if config_file.has_section(_CFG_INDEX) else {}
+    index_params = dict(config_file.items(_CFG_INDEX)) if config_file.has_section(
+        _CFG_INDEX) else {}
     index = index_class(**index_params)
 
     # index images

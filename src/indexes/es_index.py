@@ -34,6 +34,7 @@ class ESIndex():
 			response = json.loads(self.connection.getresponse().read().decode())
 			print response
 			self.counter += 1
+			
 		self.connection.close()
 		self.doc_buffer = []
 
