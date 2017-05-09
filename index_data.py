@@ -37,7 +37,7 @@ if __name__ == '__main__':
     config_file.readfp(open(config_path))
 
     if blacklist_path is not None:
-        with open(blacklist_path) as fd:
+        with open(blacklist_path, 'r') as fd:
             blacklist = (['im' + img_id.strip() for img_id in fd])
     else:
         blacklist = set([])

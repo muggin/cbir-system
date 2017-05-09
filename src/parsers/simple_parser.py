@@ -24,7 +24,7 @@ class SimpleParser(BaseParser):
         :return: dictionary holding image features (ready to be used as query)
         """
         image_features = self._extractor.extract(query_image)
-        return {'doc_name': None, 'features': image_features}
+        return {'doc_name': None, 'features': image_features.tolist()}
 
     def prepare_document(self, image_name, image):
         """
@@ -34,4 +34,4 @@ class SimpleParser(BaseParser):
         :return: dictionary holding image information (ready to be stored in index)
         """
         image_features = self._extractor.extract(image)
-        return {'doc_name': image_name, 'features': image_features}
+        return {'doc_name': image_name, 'features': image_features.tolist()}

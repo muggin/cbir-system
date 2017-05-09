@@ -53,7 +53,8 @@ class V1ImageParser(BaseParser):
         cnn_hist /= np.sum(cnn_hist, keepdims=True)
         cnn_fc /= np.linalg.norm(cnn_fc, keepdims=True)
 
-        return {'cnn_basic': cnn_fc, 'hist_basic': hist_features, 'cnn_hist': cnn_hist}
+        return {'cnn_basic': cnn_fc.tolist(), 'hist_basic': hist_features.tolist(),
+                'cnn_hist': cnn_hist.tolist()}
 
     def prepare_query(self, query_image):
         """
