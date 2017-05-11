@@ -1,6 +1,6 @@
 FROM ubuntu:16.04
 
-RUN apt-get update && apt-get install python python-pip -y
+RUN apt-get update && apt-get install python python-pip iputils-ping -y
 RUN pip install flask
 RUN pip install flask_cors
 

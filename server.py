@@ -13,7 +13,6 @@ from src.indexes import file_index
 
 parser = simple_parser.SimpleParser()
 
-index = file_index.FileIndex()
 
 PORT = 8081
 
