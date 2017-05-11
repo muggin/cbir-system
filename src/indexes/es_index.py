@@ -3,7 +3,7 @@ import json
 import httplib
 import re
 
-INDEX_PATH = "/images/"
+INDEX_PATH = "/image/"
 
 
 class ESIndex():
@@ -12,7 +12,9 @@ class ESIndex():
 		self.counter = 1 # Document ID
 		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
 		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
-
+		self.connection = httplib.HTTPConnection(self.URL)
+		self.connection.request('POST', INDEX_PATH, json.JSONEncoder().encode({"mappings": { "image_data" : {"properties" : { "features" : "short"}}}}), { "Content-Type": "application/json" })
+		self.connection.close()
 	# Stores a document in the buffer
 	# When a certain threshold is met, indexes them all at once
 	def insert_document(self, document_dict):
@@ -27,7 +29,7 @@ class ESIndex():
 		
 		self.connection = httplib.HTTPConnection(self.URL)
 		for doc in self.doc_buffer:
-			#print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
+			print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
 			# Index data
 			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "features" : doc["features"]}), { "Content-Type": "application/json" })
 			# Retrieve response for debug, could be relevant to use for error handling
@@ -41,15 +43,17 @@ class ESIndex():
 	# Query ES with specified image
 	def query_index(self, query_dict, query_fields):
 		# Put together query string
-		query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})
-		
+		if query_fields == "eucl":
+			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})
+		elif query_fields == "cos":
+			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "cos", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
 		self.connection = httplib.HTTPConnection(self.URL)
 		
 		# Print query string for debug purposes
 		print query_string
 		
 		# Submit the search query to ES
-		self.connection.request('GET', '/images/_search', query_string)
+		self.connection.request('GET', '/_search', query_string)
 
 		# Retrieve response
 		response = json.loads(self.connection.getresponse().read().decode())
@@ -62,3 +66,14 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
+
+
+index = ESIndex("localhost:9200")
+
+#index.insert_document({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]})
+#index.insert_document({"doc_name" : "cat.jpg", "features" : [2, 3, 12, 7]})
+#index.persist_index()
+index.query_index({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]}, "eucl")
+
+index.query_index({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]}, "cos")
+
