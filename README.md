@@ -65,6 +65,31 @@ The server can be started by first building a docker image and then running it:
 
 `docker-compose up server`
 
+## Servers
+
+There are two docker containers necessary in order to run this application.
+
+Elasticsearch is run by
+
+`sudo sysctl -w vm.max_map_count=262144`
+
+`docker-compose up elasticsearch`
+
+The backend server has to be built before it is run:
+
+`docker-compose build server`
+
+After that it can be run with 
+
+`docker-compose up server`
+
+
+In order to index or debug within the server container you can attach to a bash inside the server docker container:
+
+
+`docker-compose run server bash`
+
+
 
 
 
