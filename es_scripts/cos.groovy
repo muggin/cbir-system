@@ -15,6 +15,7 @@ if(docvalues.size() != newvalues.size()) {
 		sum += val * newvalues[i]
 		first_norm += pow(val, 2)
 		second_norm += pow(newvalues[i], 2)
+		i += 1
 	}
 }
 
