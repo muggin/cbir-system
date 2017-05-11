@@ -6,6 +6,7 @@ from base64 import b64encode
 
 INDEX_PATH = "/image/"
 
+auth = b64encode(b"elastic:changeme").decode("ascii")
 
 class ESIndex():
 	def __init__(self, url, threshold=500):
@@ -68,11 +69,3 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
-
-index = ESIndex("localhost:9200")
-
-#index.insert_document({"doc_name" : None, "cnn_hist" : [1, 2, 3, 4], "cnn_basic" : [2, 3, 1, 9], "hist_basic" : [92, 29, 83, 20]})
-
-#index.persist_index()
-
-index.query_index({"doc_name" : None, "cnn_hist" : [1, 2, 3, 4]}, "euclidean", "cnn_hist")
