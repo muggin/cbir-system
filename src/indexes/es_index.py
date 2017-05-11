@@ -6,6 +6,7 @@ from base64 import b64encode
 
 INDEX_PATH = "/image/"
 
+auth = b64encode(b"elastic:changeme").decode("ascii")
 
 class ESIndex():
 	def __init__(self, url, threshold=500):
@@ -14,8 +15,6 @@ class ESIndex():
 		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
 		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
 		self.connection = httplib.HTTPConnection(self.URL)
-		self.connection.request('POST', INDEX_PATH, json.JSONEncoder().encode({"mappings": { "image_data" : {"properties" : { "features" : "short"}}}}), { "Content-Type": "application/json" })
-		self.connection.close()
 	# Stores a document in the buffer
 	# When a certain threshold is met, indexes them all at once
 	def insert_document(self, document_dict):
