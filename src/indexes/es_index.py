@@ -46,14 +46,14 @@ class ESIndex():
 	# Query ES with specified image
 	def query_index(self, query_dict, query_fields):
 		# Put together query string
-		if query_fields == "eucl":
-			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "eucl", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})
-		elif query_fields == "cos":
-			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "cos", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
-		self.connection = httplib.HTTPConnection(self.URL)
+		if query_fields == "euclidean":
+			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "euclidean", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})
+		elif query_fields == "cosine":
+			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "cosine", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
+		elif query_fields == "intersection":
+			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "intersection", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
 		
-		# Print query string for debug purposes
-		print query_string
+		self.connection = httplib.HTTPConnection(self.URL)
 		
 		# Submit the search query to ES
 		self.connection.request('GET', '/_search', query_string)
@@ -69,14 +69,3 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
-
-
-index = ESIndex("localhost:9200")
-
-#index.insert_document({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]})
-#index.insert_document({"doc_name" : "cat.jpg", "features" : [2, 3, 12, 7]})
-#index.persist_index()
-index.query_index({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]}, "eucl")
-
-index.query_index({"doc_name" : "fish.jpg", "features" : [1, 3, 5, 7]}, "cos")
-
