@@ -14,7 +14,6 @@ class ESIndex():
 		self.doc_buffer = [] # Hold documents until threshold is reached or persist_index() is called
 		self.DOC_THRESHOLD = threshold # The amount of documents required to trigger the indexing
 		self.connection = httplib.HTTPConnection(self.URL)
-		self.connection.request('POST', INDEX_PATH, json.JSONEncoder().encode({"mappings": { "image_data" : {"properties" : { "features" : "short"}}}}), { "Content-Type": "application/json" })
 		self.connection.close()
 	# Stores a document in the buffer
 	# When a certain threshold is met, indexes them all at once
@@ -30,11 +29,9 @@ class ESIndex():
 		
 		self.connection = httplib.HTTPConnection(self.URL)
 		for doc in self.doc_buffer:
-			print json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "query_feature" : doc["features"]})
 			# Index data
-			auth = b64encode(b"elastic:changeme").decode("ascii")
 
-			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "features" : doc["features"]}), { "Content-Type": "application/json", 'Authorization' : 'Basic ' + auth })
+			self.connection.request('POST', INDEX_PATH + str(self.counter), json.JSONEncoder().encode({"doc_name" : doc["doc_name"], "cnn_basic" : doc["cnn_basic"], "hist_basic" : doc["hist_basic"], "cnn_hist" : doc["cnn_hist"]}), { "Content-Type" : "application/json", "Authorization" : "Basic " + auth })
 			# Retrieve response for debug, could be relevant to use for error handling
 			response = json.loads(self.connection.getresponse().read().decode())
 			print response
@@ -44,16 +41,18 @@ class ESIndex():
 		self.doc_buffer = []
 
 	# Query ES with specified image
-	def query_index(self, query_dict, query_fields):
-		# Put together query string
-		if query_fields == "euclidean":
-			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "euclidean", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})
-		elif query_fields == "cosine":
-			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "cosine", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
-		elif query_fields == "intersection":
-			query_string = json.JSONEncoder().encode({"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "intersection", "lang" : "groovy", "params" : {"features" : query_dict["features"]}}}}}})	
+	def query_index(self, query_dict, similarity, extractor):
 		
+		tmpdict = {"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict[extractor]}}}}}}
+		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity
+		
+		# Put together query string
+		query_string = json.JSONEncoder().encode(tmpdict)
+
+		print query_string
+
 		self.connection = httplib.HTTPConnection(self.URL)
+		auth = b64encode(b"elastic:changeme").decode("ascii")
 		
 		# Submit the search query to ES
 		self.connection.request('GET', '/_search', query_string)
@@ -69,3 +68,11 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
+
+index = ESIndex("localhost:9200")
+
+#index.insert_document({"doc_name" : None, "cnn_hist" : [1, 2, 3, 4], "cnn_basic" : [2, 3, 1, 9], "hist_basic" : [92, 29, 83, 20]})
+
+#index.persist_index()
+
+index.query_index({"doc_name" : None, "cnn_hist" : [1, 2, 3, 4]}, "euclidean", "cnn_hist")
