@@ -69,9 +69,11 @@ The server can be started by first building a docker image and then running it:
 
 There are two docker containers necessary in order to run this application.
 
-Elasticsearch is run by
+Elasticsearch is run by by first increasing the vm limit, then building and running the docker container
 
 `sudo sysctl -w vm.max_map_count=262144`
+
+`docker-compose build elasticsearch`
 
 `docker-compose up elasticsearch`
 
