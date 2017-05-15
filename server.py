@@ -48,9 +48,7 @@ def search():
 
     query = parser.prepare_query(io.imread(file_name))[feature]
 
-    print('hejsan', query)
-
-    query_response = esIndex.query_index(query, feature, evaluation)
+    query_response = esIndex.query_index(query, evaluation, feature)
 
     return query_response
 
