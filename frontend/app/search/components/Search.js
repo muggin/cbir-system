@@ -9,9 +9,9 @@ const EVALUATIONS = [{value: 'cosine', text: 'Cosine'},
   {value: 'bhattacharyya', text: 'Bhattacharyya'},
   {value: 'intersection', text: 'Intersection'}]
 
-const FEATURES = [{value: 'hist', text: 'Histograms'},
-  {value: 'cnn', text: 'CNN'},
-  {value: 'combination', text: 'CNN + Histograms'}]
+const FEATURES = [{value: 'hist_basic', text: 'Histograms'},
+  {value: 'cnn_basic', text: 'CNN'},
+  {value: 'cnn_hist', text: 'CNN + Histograms'}]
 
 const Search = ({dispatch, loading, feature, evaluation}) => (
   <div style={{padding: '2em'}}>
