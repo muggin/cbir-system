@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { search, selectFeature, selectScoring } from '../actions'
+import { search, selectFeature, selectEvaluation } from '../actions'
 
 const EVALUATIONS = [{value: 'cosine', text: 'Cosine'},
   {value: 'euclidean', text: 'Euclidean'},
@@ -13,14 +13,14 @@ const FEATURES = [{value: 'hist', text: 'Histograms'},
   {value: 'cnn', text: 'CNN'},
   {value: 'combination', text: 'CNN + Histograms'}]
 
-const Search = ({dispatch, loading, feature}) => (
+const Search = ({dispatch, loading, feature, evaluation}) => (
   <div style={{padding: '2em'}}>
     
     <label style={{fontSize: '1.6em', width: '70%', display: 'block', margin: '0 auto', textAlign: 'center', backgroundColor: loading ? 'grey' : 'turquoise', padding: '1em', borderRadius: '.5em', cursor: 'pointer', color: 'white'}}>
       Choose a file for image search
       <input type='file' name='file' id="file" style={{display: 'none'}} onClick={(e) => {
-        if (!feature || !scoring) {
-          alert('Please select a feature extractor and a scoring function')
+        if (!feature || !evaluation) {
+          alert('Please select a feature extractor and a evaluation function')
           e.preventDefault()
           return
         }
@@ -28,12 +28,12 @@ const Search = ({dispatch, loading, feature}) => (
         const files = document.getElementById('file').files
         const file = files[0]
 
-        dispatch(search(file, feature))
+        dispatch(search(file, feature, evaluation))
       }} />
     </label> 
   
     <SelectionButtons title={'Choose feature extractor'} options={FEATURES} selectAction={(feature) => dispatch(selectFeature(feature))} />
-    <SelectionButtons title={'Choose evaluation function'} options={EVALUATIONS} selectAction={(scoring) => dispatch(selectScoring(scoring))} />
+    <SelectionButtons title={'Choose evaluation function'} options={EVALUATIONS} selectAction={(evaluation) => dispatch(selectEvaluation(evaluation))} />
   
   </div>
 )
@@ -69,7 +69,8 @@ class SelectionButtons extends Component {
 
 const mapStateToProps = (state) => ({
   loading: state.search.loading,
-  feature: state.search.feature
+  feature: state.search.feature,
+  evaluation: state.search.evaluation
 })
 
 export default connect(mapStateToProps)(Search)

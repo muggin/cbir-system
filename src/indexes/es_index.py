@@ -55,7 +55,7 @@ class ESIndex():
 		self.connection = httplib.HTTPConnection(self.URL)
 		
 		# Submit the search query to ES
-		self.connection.request('GET', '/_search', query_string)
+		self.connection.request('GET', '/_search', query_string, { "Content-Type": "application/json", 'Authorization' : 'Basic ' + auth })
 
 		# Retrieve response
 		response = json.loads(self.connection.getresponse().read().decode())

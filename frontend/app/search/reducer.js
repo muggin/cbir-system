@@ -24,9 +24,9 @@ const feature = (state = null, {type, feature}) => {
   }
 }
 
-const scoring = (state = null, {type, scoring}) => {
+const evaluation = (state = null, {type, evaluation}) => {
   switch (type) {
-    case actions.SELECT_SCORING: return scoring
+    case actions.SELECT_EVALUATION: return evaluation
     default: return state
   }
 }
@@ -35,5 +35,5 @@ export default combineReducers({
   images,
   loading,
   feature,
-  scoring
+  evaluation
 })

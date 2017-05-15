@@ -7,11 +7,13 @@ import skimage.io as io
 
 #from src.feature_extractors import hist_ext
 from src.parsers import simple_parser
-from src.indexes import file_index
+from src.indexes import es_index
 
 #cnn_extractor = hist_ext.HistogramExtractor()
 
 parser = simple_parser.SimpleParser()
+
+esIndex = es_index.ESIndex('elasticsearch:9200')
 
 
 PORT = 8081
@@ -46,9 +48,13 @@ def search():
 
     query = parser.prepare_query(io.imread(file_name))
 
+    query_response = esIndex.query_index(query, evaluation)
 
+    print 'hejsan'
+    
+    print query_response
 
-    return jsonify({'images': ['img1', 'img2']})
+    return query_response
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
