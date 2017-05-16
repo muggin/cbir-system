@@ -45,8 +45,10 @@ class ESIndex():
 	def query_index(self, query_dict, similarity, extractor):
 		
 		tmpdict = {"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
-		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity # Set similarity computation
-		tmpdict["query"]["function_score"]["script_score"]["script"]["params"]["extractor"] = extractor # Set extractor features
+		# Set similarity computation
+		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity
+		# Set extractor features
+		tmpdict["query"]["function_score"]["script_score"]["script"]["params"]["extractor"] = extractor
 		
 		# Put together query string
 		query_string = json.JSONEncoder().encode(tmpdict)
