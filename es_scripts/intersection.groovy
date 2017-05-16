@@ -8,6 +8,8 @@ if(extractor == "cnn_basic") {
 	docvalues = _source.cnn_hist
 } else if(extractor == "hist_basic") {
 	docvalues = _source.hist_basic
+} else {
+	return -1
 }
 
 def newvalues = features

@@ -44,11 +44,14 @@ class ESIndex():
 	# Query ES with specified image
 	def query_index(self, query_dict, similarity, extractor):
 		
-		tmpdict = {"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
+		tmpdict = {"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
 		# Set similarity computation
 		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity
 		# Set extractor features
 		tmpdict["query"]["function_score"]["script_score"]["script"]["params"]["extractor"] = extractor
+
+		if similarity == "euclidean":
+			tmpdict["sort"]["_score"] = "asc"
 		
 		# Put together query string
 		query_string = json.JSONEncoder().encode(tmpdict)
@@ -72,3 +75,9 @@ class ESIndex():
 	def persist_index(self):
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
+
+index = ESIndex("localhost:9200")
+
+#ndex.insert_document({"doc_name" : "hej", "hist_basic" : [1,2,3,4], "cnn_basic" : [0, 0, 0, 0], "cnn_hist" : [100, 100, 100, 100]})
+#index.persist_index()
+index.query_index({"doc_name" : "hej", "features" : [1,2,3,4]}, "euclidean" ,"hist_basic")
