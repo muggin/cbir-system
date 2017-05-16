@@ -44,8 +44,9 @@ class ESIndex():
 	# Query ES with specified image
 	def query_index(self, query_dict, similarity, extractor):
 		
-		tmpdict = {"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict[extractor]}}}}}}
-		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity
+		tmpdict = {"sort" : { "_score" : "asc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
+		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity # Set similarity computation
+		tmpdict["query"]["function_score"]["script_score"]["script"]["params"]["extractor"] = extractor # Set extractor features
 		
 		# Put together query string
 		query_string = json.JSONEncoder().encode(tmpdict)
