@@ -42,14 +42,28 @@ class ESIndex():
 		self.doc_buffer = []
 
 	# Query ES with specified image
+	# @params: query_dict is a dictionary of the form
+	# {
+	#  "doc_name" : "name",
+	#  "features" : [1, 2, 3, 4],
+	# }
+	# doc_name can be anything that matches the constraints of a file name
+	# features has to be as long as the indexed vectors
+	#
+	# @params: similarity is a string determining the similarity scoring script. 
+	# Valid values "euclidean", "cosine", "intersection" 
+	#
+	# @params: extractor is a string determining the features to use to score the images
+	# Valid values "cnn_basic", "cnn_hist", "hist_basic"
 	def query_index(self, query_dict, similarity, extractor):
-		
+		#base structure of the dictionary to query the index with
 		tmpdict = {"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
-		# Set similarity computation
+		# Set similarity computation according to parameter
 		tmpdict["query"]["function_score"]["script_score"]["script"]["file"] = similarity
-		# Set extractor features
+		# Set extractor features according to parameter
 		tmpdict["query"]["function_score"]["script_score"]["script"]["params"]["extractor"] = extractor
 
+		# If euclidean similarity is to be used, the best-matching images are the lowest, so setting sort to ascending instead
 		if similarity == "euclidean":
 			tmpdict["sort"]["_score"] = "asc"
 		
