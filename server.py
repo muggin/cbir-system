@@ -48,7 +48,9 @@ def search():
 
     query = parser.prepare_query(io.imread(file_name))[feature]
 
-    query_response = esIndex.query_index(query, evaluation, feature)
+    query_dict = {'doc_name': None, 'features': query}
+
+    query_response = esIndex.query_index(query_dict, evaluation, feature)
 
     return query_response
 
