@@ -76,8 +76,7 @@ class ESIndex():
 		if len(self.doc_buffer) > 0:
 			self.index_docs()
 
-index = ESIndex("localhost:9200")
-
-#ndex.insert_document({"doc_name" : "hej", "hist_basic" : [1,2,3,4], "cnn_basic" : [0, 0, 0, 0], "cnn_hist" : [100, 100, 100, 100]})
+#index = ESIndex("localhost:9200")
+#index.insert_document({"doc_name" : "hej", "hist_basic" : [1,2,3,4], "cnn_basic" : [0, 0, 0, 0], "cnn_hist" : [100, 100, 100, 100]})
 #index.persist_index()
-index.query_index({"doc_name" : "hej", "features" : [1,2,3,4]}, "euclidean" ,"hist_basic")
+#index.query_index({"doc_name" : "hej", "features" : [1,2,3,4]}, "euclidean" ,"hist_basic")
