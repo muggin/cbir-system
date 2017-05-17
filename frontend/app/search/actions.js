@@ -23,6 +23,7 @@ export const search = (file, feature, evaluation) => {
         body: JSON.stringify({image: reader.result, file_ending: fileEnding, feature, evaluation})
       })
       .then(response => response.json())
+      .then(dict => dict.hits.hits.map(img => img._source['doc_name']))
       .then(images => {
         // dispatch({type: SEARCH_SUCCESS, images: ['llama.jpg', 'llama.jpg', 'llama.jpg', 'llama.jpg', 'llama.jpg', 'llama.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg', 'llama2.jpg']})
         dispatch({type: SEARCH_SUCCESS, images})

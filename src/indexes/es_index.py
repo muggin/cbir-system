@@ -56,6 +56,9 @@ class ESIndex():
 	# @params: extractor is a string determining the features to use to score the images
 	# Valid values "cnn_basic", "cnn_hist", "hist_basic"
 	def query_index(self, query_dict, similarity, extractor):
+		similarity = similarity.encode("ascii")
+		extractor = extractor.encode("ascii")
+
 		#base structure of the dictionary to query the index with
 		tmpdict = {"sort" : { "_score" : "desc" }, "query" : {"function_score" : {"script_score" : {"script" : { "file" : "", "lang" : "groovy", "params" : {"features" : query_dict["features"], "extractor" : ""}}}}}}
 		# Set similarity computation according to parameter
@@ -70,7 +73,7 @@ class ESIndex():
 		# Put together query string
 		query_string = json.JSONEncoder().encode(tmpdict)
 
-		print query_string
+		#print query_string
 
 		self.connection = httplib.HTTPConnection(self.URL)
 		auth = b64encode(b"elastic:changeme").decode("ascii")
@@ -80,6 +83,7 @@ class ESIndex():
 
 		# Retrieve response
 		response = json.loads(self.connection.getresponse().read().decode())
+		print 'HALLOOOOOOOOOO'
 		print response
 		
 		self.connection.close()
