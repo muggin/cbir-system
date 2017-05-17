@@ -52,7 +52,7 @@ def search():
 
     query_response = esIndex.query_index(query_dict, evaluation, feature)
 
-    return query_response
+    return jsonify(query_response)
 
 if __name__ == '__main__':
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
