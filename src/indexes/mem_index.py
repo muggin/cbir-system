@@ -6,7 +6,7 @@ import cPickle as pickle
 
 
 from src.indexes.base_index import BaseIndex
-from src.similarity_measures.measures import euclidean_similarity, cosine_similarity, intersection_similarity
+from src.similarity_measures.measures import *
 
 
 class MemoryIndex(BaseIndex):
@@ -28,7 +28,10 @@ class MemoryIndex(BaseIndex):
         self._similarities = {
             'euclidean': (euclidean_similarity, False),
             'cosine': (cosine_similarity, True),
-            'intersection': (intersection_similarity, True)
+            'intersection': (intersection_similarity, True),
+            'kl': (kl_similarity, False),
+            'chi2': (chisq_similarity, False),
+            'bhattacharyya': (bhattacharyya_similarity, False)
         }
 
     def _initialize_index(self):
@@ -42,7 +45,7 @@ class MemoryIndex(BaseIndex):
         self._index.append(document_dict)
         return 0
 
-    def query_index(self, query_dict, similarity, extractor):
+    def query_index(self, query_dict, similarity, extractor, return_score=False):
         # get appropriate similarity measure
         similarity_fn, reverse_order = self._similarities[similarity]
 
@@ -53,7 +56,10 @@ class MemoryIndex(BaseIndex):
         results = [(indexed_dict['doc_name'], similarity_fn(np.array(indexed_dict[extractor]), np.array(query_features))) for indexed_dict in self._index]
         results_sorted = sorted(results, reverse=reverse_order, key=lambda x: x[1])
 
-        return [result[0] for result in results_sorted]
+        if return_score:
+            return results_sorted
+        else:
+            return [result[0] for result in results_sorted]
 
     def persist_index(self):
         if self._index_path is not None:
