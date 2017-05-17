@@ -10,6 +10,10 @@ export const search = (file, feature, evaluation) => {
     const reader = new FileReader()
 
     reader.readAsDataURL(file)
+    
+    reader.onload = () => {
+      dispatch(base64File(reader.result))
+    }
 
     const fileName = file.name
     const fileEnding = fileName.substring(fileName.length - 3, fileName.length)
@@ -34,6 +38,10 @@ export const search = (file, feature, evaluation) => {
 
   }
 }
+
+export const BASE_64_FILE = 'BASE_64_FILE'
+
+export const base64File = file => ({type: BASE_64_FILE, file})
 
 export const SELECT_FEATURE = 'SELECT_FEATURE'
 

@@ -31,9 +31,17 @@ const evaluation = (state = null, {type, evaluation}) => {
   }
 }
 
+const base64File = (state = null, {type, file}) => {
+  switch (type) {
+    case actions.BASE_64_FILE: return file
+    default: return state
+  }
+}
+
 export default combineReducers({
   images,
   loading,
   feature,
-  evaluation
+  evaluation,
+  base64File
 })

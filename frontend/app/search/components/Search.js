@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { search, selectFeature, selectEvaluation } from '../actions'
+import { search, selectFeature, selectEvaluation, base64File } from '../actions'
 
 const EVALUATIONS = [{value: 'cosine', text: 'Cosine'},
   {value: 'euclidean', text: 'Euclidean'},
@@ -26,6 +26,7 @@ const Search = ({dispatch, loading, feature, evaluation}) => (
         }
       }} onChange={() => { 
         const files = document.getElementById('file').files
+        if (files.length == 0) return
         const file = files[0]
 
         dispatch(search(file, feature, evaluation))
