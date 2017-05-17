@@ -18,12 +18,13 @@ class BaseIndex(object):
         return
 
     @abc.abstractmethod
-    def query_index(self, query_dict, query_fields):
+    def query_index(self, query_dict, similarity, extractor):
         """
         Method queries persisted index.
 
         :param: query_dict - dictionary holding features extracted from the query
-        :param: query_fields - list containing names of fields that should be matched
+        :param: similarity - name of similarity function to use for ranking
+        :param: extractor - name of index to use for retrieval
         :return: documents retrieved from index that match query
         """
         return

@@ -5,6 +5,7 @@ import argparse
 import ConfigParser as cp
 import cPickle as pickle
 
+from tqdm import tqdm
 from skimage import io
 
 # names of sections in config file
@@ -38,7 +39,7 @@ if __name__ == '__main__':
 
     if blacklist_path is not None:
         with open(blacklist_path, 'r') as fd:
-            blacklist = (['im' + img_id.strip() for img_id in fd])
+            blacklist = (['im' + img_id.strip() + '.jpg' for img_id in fd])
     else:
         blacklist = set([])
 
@@ -56,13 +57,14 @@ if __name__ == '__main__':
     index = index_class(**index_params)
 
     # index images
-    if not quiet_mode:
-        print 'Indexing images...'
 
     if feats_path is None:
+        if not quiet_mode:
+            print 'Indexing images...'
+
         indexed_count = 0
         for root, dirs, files in os.walk(data_path, topdown=True):
-            for file_name in files:
+            for file_name in tqdm(files):
                 if file_name.endswith(('.jpg', '.png')) and file_name not in blacklist:
                     image_path = os.path.join(root, file_name)
                     image = io.imread(image_path)
@@ -73,10 +75,16 @@ if __name__ == '__main__':
                     if not quiet_mode and indexed_count % 500 == 0:
                         print 'Indexed {} images...'.format(indexed_count)
     else:
+
         with open(feats_path, 'r') as fd:
+            if not quiet_mode:
+                print 'Loading parsed images to memory'
             parsed_images = pickle.load(fd)
-            for image_parsed in parsed_images:
-                if image_parsed not in blacklist:
+
+            if not quiet_mode:
+                print 'Indexing parsed images...'
+            for image_parsed in tqdm(parsed_images):
+                if image_parsed['doc_name'] not in blacklist:
                     index.insert_document(image_parsed)
 
     # persist index

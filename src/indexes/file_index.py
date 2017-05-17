@@ -28,7 +28,7 @@ class FileIndex(BaseIndex):
         self._parsed_images.append(document_dict)
         return 0
 
-    def query_index(self, query_dict, query_fields):
+    def query_index(self, query_dict, similarity, extractor):
         return
 
     def persist_index(self):
