@@ -38,6 +38,10 @@ The system is based on two feature extractors, one using 2D color histograms and
 `configs` directory - holds `index_data.py` configurations
 - `simple_test.cfg` - simple indexing using SimpleParser and MemoryIndex
 
+`frontend` directory - holds the React-based frontend for the project. Uses webpack to build JavaScript and package it to a bundle. See the README in the frontend directory for more instructions.
+
+`server.py` file - contains a light-weight flask application for receiving HTTP-requests from the frontend.
+
 ## Execution
 ### Image indexing
 The `index_data.py` script is responsible for indexing images. the script takes as arguments a path to the directory holding the files and a path to the config file.
@@ -57,19 +61,11 @@ key=value # these params will be passed to the class on init, this section can b
 key=value # these params will be passed to the class on init this section can be empty
 ```
 
-## Server
-
-The server can be started by first building a docker image and then running it:
-
-`docker-compose build server`
-
-`docker-compose up server`
-
 ## Servers
 
 There are two docker containers necessary in order to run this application.
 
-Elasticsearch is run by by first increasing the vm limit, then building and running the docker container
+Elasticsearch is run by first increasing the vm limit, then building and running the docker container
 
 `sudo sysctl -w vm.max_map_count=262144`
 
@@ -77,17 +73,13 @@ Elasticsearch is run by by first increasing the vm limit, then building and runn
 
 `docker-compose up elasticsearch`
 
-The backend server has to be built before it is run:
+The backend server is built and run with the following commands:
 
 `docker-compose build server`
 
-After that it can be run with 
-
 `docker-compose up server`
 
-
-In order to index or debug within the server container you can attach to a bash inside the server docker container:
-
+In order to index or debug within the server container you can run bash inside the server docker container:
 
 `docker-compose run server bash`
 
