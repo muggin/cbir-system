@@ -3,7 +3,7 @@ import argparse
 import cPickle as pickle
 import src.indexes.mem_index as mem
 import src.parsers.v1image_parser as v1
-
+import matplotlib.pyplot as plt
 from skimage import io
 
 # names of sections in config file
@@ -57,6 +57,7 @@ if __name__ == '__main__':
                 query_parsed = parser.prepare_document(file_name, query_image)
                 query_doc = {'doc_name': None, 'features': query_parsed[extractor]}
                 results = index.query_index(query_doc, metric, extractor, show_score)
+                results = [x for x in results if x[0] not in blacklist]
                 results = results[:top_k]
                 print 'Results for query image: {}'.format(file_name)
                 if show_score:
@@ -65,3 +66,24 @@ if __name__ == '__main__':
                 else:
                     for result_name in results:
                         print '{}'.format(result_name)
+
+                fig = plt.subplot(1, 3, 1)
+                fig = plt.imshow(io.imread(os.path.join(root, file_name)))
+                fig.axes.get_xaxis().set_visible(False)
+                fig.axes.get_yaxis().set_visible(False)
+
+                for i in range(4):
+                    fig = plt.subplot(2, 6, 3 + i)
+                    fig.set_title("result " + str(2*i + 1))
+                    fig = plt.imshow(io.imread(os.path.join('./data/flickr_25k', results[2*i][0])))
+                    fig.axes.get_xaxis().set_visible(False)
+                    fig.axes.get_yaxis().set_visible(False)
+
+                    fig = plt.subplot(2, 6, 9 + i)
+                    fig.set_title("result " + str(2*i + 2))
+                    fig = plt.imshow(io.imread(os.path.join('./data/flickr_25k', results[2*i+1][
+                        0])))
+                    fig.axes.get_xaxis().set_visible(False)
+                    fig.axes.get_yaxis().set_visible(False)
+
+                plt.show()
