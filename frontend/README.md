@@ -6,6 +6,6 @@ Using react and redux
 
 `npm install`
 
-`npm run dev-start`
+`npm run dev-server`
 
 This will run a hot reloading webpack dev server
