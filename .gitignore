@@ -1,5 +1,7 @@
 # Virtual env
 ir/*
+experiments/*
+data/parsed/*
 
 # OSX
 .DS_Store
@@ -15,7 +17,10 @@ __pycache__/
 # C extensions
 *.so
 
+frontend/node_modules
+
 # Distribution / packaging
+*.ipynb
 .Python
 env/
 build/

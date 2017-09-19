@@ -1,0 +1,34 @@
+version: '2'
+
+services:
+  server: 
+    build: ./
+    restart: unless-stopped
+    container_name: server
+    command: python server.py
+    ports: 
+      - '8081:8081'
+    volumes:
+      - '.:/app'
+    networks:
+      - esnet
+  
+  elasticsearch:
+    build:
+      context: ./
+      dockerfile: Dockerfile-elastic
+    ports:
+      - '9200:9200'
+    container_name: elasticsearch
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    networks:
+      - esnet
+
+volumes:
+  esdata:
+    driver: local
+
+networks:
+  esnet:
+    driver: bridge
