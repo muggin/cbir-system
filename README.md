@@ -1,5 +1,5 @@
 # Content Based Image Retrieval Systems
-The goal of this project was to implement a simple Content-Based Image Retrieval system from scratch. The system is based on two feature extractors, one using 2D color histograms and the other based on the VGG16 convolutional neural network. The system is backed by ElasticSearch.
+The goal of this project was to implement a simple Content-Based Image Retrieval system from scratch. The system is based on two feature extractors, one using 2D color histograms and the other based on the VGG16 convolutional neural network. The system is backed by ElasticSearch. The final report is available [here](final-report.pdf).
 
 This project was carried out as part of the DD2476 "Search Engines & Information Retrieval" course at [KTH Royal Institute of Technology](http://kth.se).
 
