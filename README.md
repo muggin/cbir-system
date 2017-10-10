@@ -1,11 +1,15 @@
-# DD2476 Project - Content Based Image Retrieval Systems
+# Content Based Image Retrieval Systems
+The goal of this project was to implement a simple Content-Based Image Retrieval system from scratch. The system is based on two feature extractors, one using 2D color histograms and the other based on the VGG16 convolutional neural network. The system is backed by ElasticSearch.
 
-## Description
-For our project we chose to implement a simple Content-Based Image Retrieval System.
-The system is based on two feature extractors, one using 2D color histograms and the other based on the VGG16 convolutional neural network. The system is backed by ElasticSearch.
+This project was carried out as part of the DD2476 "Search Engines & Information Retrieval" course at [KTH Royal Institute of Technology](http://kth.se).
+
+## Contributors
+- Antoine Broyelle (github: [antoinebrl](https://github.com/antoinebrl))
+- Andreas Drangel (github: [iwut](https://github.com/iwut))
+- Wojciech Kryściński (github: [muggin](https://github.com/muggin/))
+- Safir Najafi (github: [SafirN](https://github.com/SafirN))
 
 ## File organization
-
 `src` directory - holds most of the code
 - `feature_extractors` - packages holding all feature extractors
   - `base_ext.BaseExtractor` - base class for all extractors
