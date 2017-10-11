@@ -1,3 +1,6 @@
+# Language fix
+frontend/* linguist-vendored
+
 # Virtual env
 ir/*
 experiments/*
@@ -39,7 +42,6 @@ wheels/
 .installed.cfg
 *.egg
 
-static/* linguist-vendored
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
