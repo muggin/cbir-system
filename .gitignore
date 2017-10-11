@@ -1,5 +1,7 @@
 # Language fix
 frontend/* linguist-vendored
+* linguist-vendored
+*.js linguist-vendored=false
 
 # Virtual env
 ir/*
