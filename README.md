@@ -7,7 +7,7 @@ This project was carried out as part of the DD2476 "Search Engines & Information
 - Antoine Broyelle (github: [antoinebrl](https://github.com/antoinebrl))
 - Andreas Drangel (github: [iwut](https://github.com/iwut))
 - Wojciech Kryściński (github: [muggin](https://github.com/muggin/))
-- Safir Najafi (github: [SafirN](https://github.com/SafirN))
+- Safir Najafi (github: [SafirN](https://github.com/SafirN)) 
 
 ## File organization
 `src` directory - holds most of the code
